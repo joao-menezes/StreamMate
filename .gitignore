@@ -2,5 +2,8 @@
 .idea
 build
 dist
+__pycache__/
+*.pyc
+history.json
 ConversorApp.spec
 PyCharmMiscProject.iml

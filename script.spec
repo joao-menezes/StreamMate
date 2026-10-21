@@ -1,16 +1,21 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
 
+datas = [('images', 'images')]
+datas += collect_data_files('customtkinter')
+datas += collect_data_files('imageio_ffmpeg')   # binário do ffmpeg usado na conversão
+datas += collect_data_files('pytubefix')
 
 a = Analysis(
     ['script.py'],
     pathex=[],
     binaries=[],
-    datas=[('images', 'images')],
-    hiddenimports=[],
+    datas=datas,
+    hiddenimports=['darkdetect'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['moviepy', 'numpy', 'matplotlib'],
     noarchive=False,
     optimize=0,
 )
@@ -22,7 +27,9 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='script',
+    name='StreamMate',
+    icon='images/streammate.ico',
+    version='version_info.txt',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
