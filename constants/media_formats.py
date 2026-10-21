@@ -63,6 +63,8 @@ INPUT_EXTENSIONS = sorted({
     "mp3", "wav", "m4a", "aac", "flac", "ogg", "oga", "opus", "wma", "aiff", "aif", "aifc",
     "ac3", "eac3", "dts", "amr", "ape", "mka", "mp2", "au", "caf", "wv", "tta", "spx", "m4b",
     "mid", "ra",
+    # playlists (o conteúdo de cada item é convertido)
+    "vlc", "m3u", "m3u8", "pls", "xspf",
 })
 
 

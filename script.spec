@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-datas = [('images', 'images')]
+datas = [('images', 'images'), ('fonts', 'fonts')]
 datas += collect_data_files('customtkinter')
 datas += collect_data_files('imageio_ffmpeg')   # binário do ffmpeg usado na conversão
 datas += collect_data_files('pytubefix')

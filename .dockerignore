@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+**/__pycache__
+*.pyc
+build
+dist
+docs
+images
+fonts
+tests
+script.py
+script.spec
+version_info.txt
+requirements.txt
+requirements-build.txt

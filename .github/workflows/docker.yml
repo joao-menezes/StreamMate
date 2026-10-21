@@ -1,0 +1,57 @@
+name: Docker image (web)
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/streammate
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: docker build -t streammate:ci .
+
+      - name: Subir o container e testar
+        run: |
+          docker run -d --name sm -p 8080:8000 streammate:ci
+          for i in $(seq 1 30); do curl -sf localhost:8080/health && break; sleep 1; done
+          curl -sf localhost:8080/ | grep -q "streammate"
+          ffmpeg -version >/dev/null 2>&1 || sudo apt-get install -y -qq ffmpeg >/dev/null
+          ffmpeg -loglevel error -f lavfi -i testsrc=size=320x240:duration=2 -f lavfi -i sine=duration=2 \
+                 -c:v libx264 -c:a aac -shortest clip.mkv
+          printf '#EXTM3U\n#EXTINF:2,Clip\nC:\\\\Users\\\\x\\\\clip.mkv\n' > lista.vlc
+          resp=$(curl -sf -F files=@lista.vlc -F files=@clip.mkv -F format=mp4 localhost:8080/api/convert)
+          echo "$resp"
+          id=$(echo "$resp" | python3 -c "import json,sys; print(json.load(sys.stdin)['jobs'][0]['id'])")
+          for i in $(seq 1 60); do
+            st=$(curl -sf "localhost:8080/api/jobs?ids=$id" | python3 -c "import json,sys; print(json.load(sys.stdin)['jobs'][0]['state'])")
+            [ "$st" = done ] && break; [ "$st" = error ] && { docker logs sm; exit 1; }; sleep 1
+          done
+          curl -sf -o out.mp4 "localhost:8080/api/jobs/$id/file"
+          ffprobe -v error -show_entries format=format_name,duration -of csv=p=0 out.mp4
+          docker exec sm ffmpeg -hide_banner -encoders 2>/dev/null | grep -cE "libx264|libvpx-vp9|libopus|libmp3lame"
+
+      - name: Publicar no GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker tag streammate:ci $IMAGE:latest
+          docker push $IMAGE:latest
+          if [[ "${{ github.ref }}" == refs/tags/* || "${{ github.event_name }}" == release ]]; then
+            tag="${{ github.event.release.tag_name || github.ref_name }}"
+            docker tag streammate:ci $IMAGE:$tag
+            docker push $IMAGE:$tag
+          fi

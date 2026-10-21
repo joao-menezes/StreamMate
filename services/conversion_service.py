@@ -20,6 +20,9 @@ def _no_window_flags() -> int:
 
 
 def get_ffmpeg_path() -> str:
+    configured = os.environ.get("STREAMMATE_FFMPEG") or os.environ.get("IMAGEIO_FFMPEG_EXE")
+    if configured:
+        return configured
     try:
         import imageio_ffmpeg
         return imageio_ffmpeg.get_ffmpeg_exe()
@@ -44,9 +47,19 @@ class ConversionService:
         self._process: Optional[subprocess.Popen] = None
         self._cancelled = threading.Event()
 
+    @staticmethod
+    def _input_options(input_path: str) -> list[str]:
+        options = []
+        if "://" in input_path:
+            options += ["-rw_timeout", "30000000"]
+        if input_path.lower().split("?")[0].endswith((".m3u8", ".m3u")):
+            # listas HLS locais ou remotas apontam para segmentos em outros protocolos
+            options += ["-protocol_whitelist", "file,http,https,tcp,tls,crypto,data"]
+        return options
+
     def probe(self, input_path: str) -> MediaInfo:
         result = subprocess.run(
-            [self.ffmpeg, "-hide_banner", "-i", input_path],
+            [self.ffmpeg, "-hide_banner", *self._input_options(input_path), "-i", input_path],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             creationflags=_no_window_flags(),
         )
@@ -73,17 +86,18 @@ class ConversionService:
         return MediaInfo(duration, has_video, has_audio)
 
     def convert(self, input_path: str, output_path: str, output_format: str,
-                on_progress: Optional[ProgressCallback] = None) -> None:
-        if os.path.abspath(input_path) == os.path.abspath(output_path):
+                on_progress: Optional[ProgressCallback] = None,
+                info: Optional[MediaInfo] = None) -> None:
+        if "://" not in input_path and os.path.abspath(input_path) == os.path.abspath(output_path):
             raise ValueError("O arquivo de saída não pode ser o mesmo da entrada.")
 
-        info = self.probe(input_path)
+        info = info or self.probe(input_path)
         if is_video_format(output_format) and not info.has_video:
             raise ValueError("Este arquivo só tem áudio — escolha um formato de áudio.")
         if not is_video_format(output_format) and not info.has_audio:
             raise ValueError("Este arquivo não tem faixa de áudio para extrair.")
 
-        cmd = [self.ffmpeg, "-hide_banner", "-y", "-i", input_path,
+        cmd = [self.ffmpeg, "-hide_banner", "-y", *self._input_options(input_path), "-i", input_path,
                *ffmpeg_args_for(output_format),
                "-progress", "pipe:1", "-nostats", output_path]
         self._run(cmd, info.duration, on_progress)

@@ -1,0 +1,18 @@
+services:
+  streammate:
+    image: ghcr.io/joao-menezes/streammate:latest
+    build: .
+    container_name: streammate
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    environment:
+      STREAMMATE_MAX_JOBS: "2"            # conversões ao mesmo tempo
+      STREAMMATE_JOB_TTL_MINUTES: "60"    # depois disso os arquivos são apagados
+      STREAMMATE_MAX_UPLOAD_MB: "2048"    # tamanho máximo por arquivo enviado
+      STREAMMATE_ENABLE_YOUTUBE: "true"   # "false" desliga a aba de download
+    volumes:
+      - streammate-data:/data
+
+volumes:
+  streammate-data:

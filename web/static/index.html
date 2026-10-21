@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StreamMate</title>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./"><span>streammate</span><small id="version"></small></a>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="download" aria-selected="true">Baixar</button>
+      <button role="tab" data-tab="convert" aria-selected="false">Converter</button>
+    </nav>
+    <button class="link muted" id="theme">tema claro</button>
+  </header>
+
+  <main>
+    <section id="download" class="page">
+      <h1>Baixar do YouTube</h1>
+      <p class="sub">Cole o link de um vídeo e escolha o formato. O arquivo aparece aqui embaixo pra salvar.</p>
+
+      <form id="download-form" class="url-row">
+        <input id="url" type="url" required autocomplete="off" spellcheck="false"
+               placeholder="https://www.youtube.com/watch?v=…" aria-label="Link do vídeo">
+        <button class="primary" type="submit">Baixar</button>
+      </form>
+
+      <div class="field">
+        <span class="label">formato</span>
+        <div class="chips" id="download-formats"></div>
+      </div>
+
+      <p class="notice" id="youtube-off" hidden>Os downloads do YouTube estão desativados neste servidor.</p>
+
+      <h2>Seus downloads</h2>
+      <div class="list" id="download-jobs"></div>
+    </section>
+
+    <section id="convert" class="page" hidden>
+      <h1>Converter</h1>
+      <p class="sub">Vídeo, áudio ou playlist do VLC (.vlc, .m3u, .pls, .xspf). Cada arquivo vira um item na fila.</p>
+
+      <label class="drop" id="drop">
+        <input id="files" type="file" multiple hidden>
+        <strong>Solte os arquivos aqui</strong>
+        <span>ou <u>escolha no computador</u></span>
+        <em id="limits"></em>
+      </label>
+
+      <div class="field">
+        <span class="label">saída</span>
+        <select id="convert-format" aria-label="Formato de saída"></select>
+        <span class="hint">Pra uma playlist .vlc, envie a playlist junto com os vídeos que ela usa.</span>
+      </div>
+
+      <div class="upload" id="upload" hidden>
+        <div class="row"><span id="upload-text">enviando…</span><b id="upload-pct"></b></div>
+        <div class="bar"><i id="upload-bar"></i></div>
+      </div>
+      <ul class="skipped" id="skipped" hidden></ul>
+
+      <h2>Fila</h2>
+      <div class="list" id="convert-jobs"></div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <template id="job-row">
+    <div class="job">
+      <div class="name"><span class="title"></span><span class="meta"></span></div>
+      <span class="fmt"></span>
+      <div class="state"><span class="status"></span><div class="bar"><i></i></div></div>
+      <div class="actions">
+        <a class="link save" hidden>salvar</a>
+        <button class="link muted remove" title="Remover">remover</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

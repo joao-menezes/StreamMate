@@ -4,31 +4,35 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class AppConstants:
     WINDOW_TITLE: str = "StreamMate"
-    VERSION: str = "0.1.0"
-    WINDOW_SIZE: str = "1000x700"
-    MIN_SIZE: tuple = (880, 580)
+    VERSION: str = "0.2.0"
+    WINDOW_SIZE: str = "1040x700"
+    MIN_SIZE: tuple = (900, 600)
     GITHUB_URL: str = "https://github.com/joao-menezes/StreamMate"
-    ICON_PATH: str = "images/icons8-github-48.png"
     APP_ICON_PNG: str = "images/streammate.png"
     APP_ICON_ICO: str = "images/streammate.ico"
-    ICON_SIZE: tuple = (22, 22)
-    SIDEBAR_WIDTH: int = 220
-    HISTORY_DISPLAY_LIMIT: int = 3
+    HISTORY_DISPLAY_LIMIT: int = 5
 
 
-# Paleta (modo claro, modo escuro)
 class Colors:
-    ACCENT = ("#6246EA", "#7F6AFF")
-    ACCENT_HOVER = ("#4F35D2", "#6A54F0")
-    ACCENT_SOFT = ("#ECE8FF", "#2A2547")
-    BG = ("#F4F5FA", "#111218")
-    SIDEBAR = ("#FFFFFF", "#181922")
-    CARD = ("#FFFFFF", "#1E1F2A")
-    CARD_ALT = ("#F7F7FC", "#252634")
-    BORDER = ("#E4E5EF", "#2C2D3B")
-    TEXT = ("#1B1C27", "#ECECF4")
-    TEXT_MUTED = ("#6B6E85", "#9A9CB2")
-    SUCCESS = ("#1F9D63", "#3DD68C")
-    DANGER = ("#D64545", "#FF6B6B")
-    NAV_HOVER = ("#F0EEFB", "#232433")
+    """Paleta (modo claro, modo escuro). Grafite e papel, um único acento laranja."""
+    BG = ("#F2F1EE", "#141414")
+    SURFACE = ("#FFFFFF", "#1B1B1B")
+    LINE = ("#D9D7D2", "#2B2B2B")
+    TEXT = ("#161616", "#EDEDED")
+    MUTED = ("#6F6D68", "#8C8C8C")
+    ACCENT = ("#E56A00", "#FF8A1F")
+    ACCENT_HOVER = ("#C95C00", "#FF9E47")
+    ON_ACCENT = ("#FFFFFF", "#141414")
+    HOVER = ("#E8E6E1", "#232323")
+    OK = ("#2E7D4F", "#6BC48F")
+    ERROR = ("#B3261E", "#F2766B")
     TRANSPARENT = "transparent"
+
+
+class Fonts:
+    SANS = "IBM Plex Sans"
+    SANS_STRONG = "IBM Plex Sans SmBld"
+    MONO = "IBM Plex Mono"
+    MONO_STRONG = "IBM Plex Mono Medm"
+    FILES = ("fonts/IBMPlexSans-Regular.ttf", "fonts/IBMPlexSans-SemiBold.ttf",
+             "fonts/IBMPlexMono-Regular.ttf", "fonts/IBMPlexMono-Medium.ttf")
